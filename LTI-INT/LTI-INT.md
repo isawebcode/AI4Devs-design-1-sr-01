@@ -459,3 +459,102 @@ graph TD
     FB --> NOTI
     AUTH --> NOTI
 ```
+
+Este último paso no ha cumplido con las expectativas, por lo que mediante meta-prompting consigo un mejor prompt para resolver este paso
+
+#### 1. Diagrama de Contexto
+
+```mermaid
+%% C4 - Nivel 1: Diagrama de Contexto
+graph TB
+    subgraph Externos
+        Recruiter["Recruiter (Usuario)"]
+        Manager["Hiring Manager (Usuario)"]
+        EmailService["Servicio de Email Externo"]
+    end
+
+    subgraph "Sistema ATS LTI"
+        ATS["ATS LTI (Plataforma Web)"]
+    end
+
+    Recruiter --> ATS
+    Manager --> ATS
+    ATS --> EmailService
+```
+
+#### 2. Diagrama de Contenedores
+
+```mermaid
+%% C4 - Nivel 2: Diagrama de Contenedores
+graph LR
+    subgraph Usuarios
+        Recruiter["Recruiter"]
+        Manager["Hiring Manager"]
+    end
+
+    subgraph "ATS LTI"
+        FE["Frontend (React + Next.js)"]
+        API["API Backend (Node.js + Express)"]
+        DB["Base de Datos (PostgreSQL)"]
+        IA["Servicio IA (Python / ML)"]
+        Noti["Sistema de Notificaciones (WebSocket + Email)"]
+    end
+
+    Recruiter --> FE
+    Manager --> FE
+    FE --> API
+    API --> DB
+    API --> IA
+    API --> Noti
+    Noti --> FE
+```
+
+#### 3. Diagrama de Componentes (Backend API)
+
+```mermaid
+%% C4 - Nivel 3: Diagrama de Componentes del Backend API
+graph TB
+    subgraph "API Backend"
+        Controller["Controladores REST: Candidatos, Vacantes, Feedback"]
+        Auth["Servicio de Autenticación"]
+        BusinessLogic["Lógica de Negocio"]
+        Repo["Repositorios de Datos"]
+        IAAdapter["Adaptador al Servicio de IA"]
+        Notifier["Gestor de Notificaciones"]
+    end
+
+    Controller --> Auth
+    Controller --> BusinessLogic
+    BusinessLogic --> Repo
+    BusinessLogic --> IAAdapter
+    BusinessLogic --> Notifier
+```
+
+#### 4. Diagrama de Código (Componente: CandidatoService)
+
+```mermaid
+%% C4 - Nivel 4: Diagrama de Código - CandidatoService
+classDiagram
+    class CandidatoService {
+        +getCandidatos()
+        +crearCandidato(data)
+        +actualizarEstado(id, estado)
+        -validarDatos(data)
+        -formatearCV(cvFile)
+    }
+
+    class CandidatoRepository {
+        +findAll()
+        +findById(id)
+        +save(candidato)
+        +update(id, data)
+    }
+
+    class IAAdapter {
+        +priorizarCandidato(cv)
+        +extraerDatos(cv)
+    }
+
+    CandidatoService --> CandidatoRepository
+    CandidatoService --> IAAdapter
+```
